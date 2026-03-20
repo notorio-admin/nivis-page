@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <title>Nivis AI</title>
+  <style>
+    :root {
+      --white: #FFFFFF;
+      --off-white: #F8FAFC;
+      --navy: #2A3E6B;
+      --charcoal: #2A2829;
+      --black: #000000;
+      --border: rgba(42, 62, 107, 0.12);
+      --soft-border: rgba(42, 62, 107, 0.08);
+      --shadow: 0 16px 40px rgba(42, 40, 41, 0.08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --danger: #DC2626;
+      --danger-hover: #B91C1C;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fff;
+      color: var(--charcoal);
+    }
+
+    body {
+      padding: 12px;
+    }
+
+    .nivis-app {
+      width: 100%;
+      height: calc(100vh - 24px);
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nivis-topbar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 90px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 20px;
+    }
+
+    .nivis-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .nivis-brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      padding: 3px;
+      object-fit: cover;
+      flex: 0 0 auto;
+      box-shadow: 0 8px 18px rgba(42, 62, 107, 0.12);
+      background: var(--white);
+    }
+
+    .nivis-brand-text {
+      min-width: 0;
+    }
+
+    .nivis-brand-text h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      color: var(--navy);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nivis-brand-text p {
+      margin: 3px 0 0;
+      font-size: 0.9rem;
+      color: rgba(42, 40, 41, 0.68);
+      font-weight: 500;
+    }
+
+    .nivis-badge {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(42, 62, 107, 0.06);
+      border: 1px solid rgba(42, 62, 107, 0.10);
+      color: var(--navy);
+      font-size: 0.84rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .nivis-main {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .nivis-sidebar,
+    .nivis-chat-panel {
+      min-height: 0;
+      background: rgba(255, 255, 255, 0.90);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(10px);
+    }
+
+    .nivis-sidebar {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .nivis-sidebar-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .nivis-sidebar h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+    }
+
+    .nivis-sidebar-intro {
+      margin: 0 0 18px;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: rgba(42, 40, 41, 0.72);
+    }
+
+    .nivis-section {
+      margin-bottom: 18px;
+    }
+
+    .nivis-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--charcoal);
+    }
+
+    .nivis-select,
+    .nivis-upload-button,
+    .nivis-textarea {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(42, 62, 107, 0.14);
+      background: var(--white);
+      color: var(--charcoal);
+      font: inherit;
+    }
+
+    .nivis-select {
+      padding: 12px 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .nivis-select:focus,
+    .nivis-textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 4px rgba(42, 62, 107, 0.10);
+    }
+
+    .nivis-upload-wrap {
+      position: relative;
+    }
+
+    .nivis-file-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .nivis-upload-button {
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      text-align: center;
+      border-style: dashed;
+      background: var(--off-white);
+      font-weight: 600;
+      transition: 0.2s ease;
+      flex-direction: column;
+    }
+
+    .nivis-upload-wrap:hover .nivis-upload-button {
+      background: rgba(42, 62, 107, 0.04);
+      border-color: var(--navy);
+    }
+
+    .nivis-file-meta {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 22px;
+    }
+
+    .nivis-file-name {
+      font-size: 0.82rem;
+      color: rgba(42, 40, 41, 0.68);
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .nivis-remove-file {
+      display: none;
+      flex: 0 0 auto;
+      border: none;
+      background: transparent;
+      color: var(--danger);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .nivis-remove-file:hover {
+      color: var(--danger-hover);
+    }
+
+    .nivis-remove-file.visible {
+      display: inline-block;
+    }
+
+    .nivis-quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .nivis-chip {
+      border: 1px solid rgba(42, 62, 107, 0.12);
+      background: var(--white);
+      color: var(--navy);
+      border-radius: 999px;
+      padding: 9px 11px;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .nivis-chip:hover {
+      background: rgba(42, 62, 107, 0.06);
+      border-color: rgba(42, 62, 107, 0.24);
+    }
+
+    .nivis-disclaimer {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(42, 62, 107, 0.05);
+      border: 1px solid rgba(42, 62, 107, 0.08);
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: rgba(42, 40, 41, 0.76);
+    }
+
+    .nivis-chat-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .nivis-chat-header {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--soft-border);
+      background: linear-gradient(180deg, rgba(42, 62, 107, 0.04) 0%, rgba(255, 255, 255, 0.00) 100%);
+    }
+
+    .nivis-chat-header h3 {
+      margin: 0;
+      font-size: 1.02rem;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+    }
+
+    .nivis-chat-header p {
+      margin: 4px 0 0;
+      font-size: 0.88rem;
+      color: rgba(42, 40, 41, 0.68);
+    }
+
+    .nivis-chat-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nivis-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: var(--white);
+      border: 1px solid rgba(42, 62, 107, 0.10);
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .nivis-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--navy);
+    }
+
+    .nivis-icon-btn {
+      appearance: none;
+      border: 1px solid rgba(42, 62, 107, 0.12);
+      background: rgba(42, 62, 107, 0.04);
+      color: var(--navy);
+      border-radius: 999px;
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .nivis-icon-btn:hover {
+      background: rgba(42, 62, 107, 0.08);
+      border-color: rgba(42, 62, 107, 0.24);
+    }
+
+    .nivis-chat-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(42, 62, 107, 0.06), transparent 24%),
+        linear-gradient(180deg, rgba(248, 250, 252, 0.72) 0%, rgba(255, 255, 255, 0.96) 100%);
+    }
+
+    .nivis-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .nivis-message {
+      display: inline-block;
+      width: fit-content;
+      max-width: 82%;
+      padding: 15px 17px;
+      border-radius: 18px;
+      line-height: 1.58;
+      font-size: 0.95rem;
+      word-break: break-word;
+      white-space: normal;
+      box-shadow: 0 8px 20px rgba(42, 40, 41, 0.05);
+    }
+
+    #thinkingMessage {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    #thinkingMessage .nivis-message-text {
+      display: block;
+      white-space: normal;
+      text-align: left;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .nivis-message-text {
+      white-space: normal;
+    }
+
+    .nivis-message.user .nivis-message-text {
+      white-space: pre-wrap;
+    }
+
+    .nivis-message-file {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    .nivis-message-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0px;
+    }
+
+    .nivis-copy-btn {
+      appearance: none;
+      border: 1px solid rgba(42, 62, 107, 0.12);
+      background: rgba(42, 62, 107, 0.04);
+      color: var(--navy);
+      border-radius: 999px;
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .nivis-copy-btn:hover {
+      background: rgba(42, 62, 107, 0.08);
+      border-color: rgba(42, 62, 107, 0.24);
+    }
+
+    .nivis-copy-btn.copied {
+      background: rgba(42, 62, 107, 0.10);
+    }
+
+    .nivis-thinking {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 5px;
+      line-height: 1.2;
+    }
+
+    .nivis-thinking-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nivis-thinking-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(42, 62, 107, 0.55);
+      display: inline-block;
+      animation: nivisThinkingPulse 1.2s infinite ease-in-out;
+    }
+
+    .nivis-thinking-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .nivis-thinking-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes nivisThinkingPulse {
+      0%, 80%, 100% {
+        opacity: 0.28;
+        transform: translateY(0);
+      }
+      40% {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+    }
+
+    .nivis-message.assistant {
+      align-self: flex-start;
+      width: fit-content;
+      max-width: 82%;
+      background: var(--white);
+      color: var(--charcoal);
+      border: 1px solid rgba(42, 62, 107, 0.10);
+      border-top-left-radius: 8px;
+    }
+
+    .nivis-message.user {
+      align-self: flex-end;
+      width: fit-content;
+      max-width: 82%;
+      background: var(--navy);
+      color: var(--white);
+      border-top-right-radius: 8px;
+    }
+
+    .nivis-message.assistant .nivis-message-text {
+      text-align: left;
+    }
+
+    .nivis-message.assistant h1,
+    .nivis-message.assistant h2,
+    .nivis-message.assistant h3,
+    .nivis-message.assistant h4 {
+      margin: 0 0 6px;
+      color: var(--black);
+      line-height: 1.28;
+    }
+
+    .nivis-message.assistant p {
+      margin: 0 0 2px;
+    }
+
+    .nivis-message.assistant p:last-child,
+    .nivis-message.assistant ul:last-child,
+    .nivis-message.assistant ol:last-child {
+      margin-bottom: 0;
+    }
+
+    .nivis-message.assistant ul,
+    .nivis-message.assistant ol {
+      margin: 0 0 2px 18px;
+      padding: 0;
+    }
+
+    .nivis-message.assistant li + li {
+      margin-top: 1px;
+    }
+
+    .nivis-message.assistant strong {
+      font-weight: 700;
+    }
+
+    .nivis-message.assistant code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.92em;
+    }
+
+    .nivis-input-area {
+      flex: 0 0 auto;
+      padding: 16px;
+      border-top: 1px solid var(--soft-border);
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .nivis-compose {
+      border: 1px solid rgba(42, 62, 107, 0.14);
+      border-radius: 20px;
+      background: var(--white);
+      padding: 12px;
+      box-shadow: 0 12px 30px rgba(42, 40, 41, 0.05);
+    }
+
+    .nivis-textarea {
+      min-height: 96px;
+      resize: none;
+      border: none;
+      background: transparent;
+      padding: 4px 4px 12px;
+      font-size: 16px;
+      line-height: 1.55;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .nivis-textarea:focus {
+      box-shadow: none;
+    }
+
+    .nivis-compose-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 1px solid rgba(42, 62, 107, 0.08);
+    }
+
+    .nivis-compose-hint {
+      font-size: 0.8rem;
+      color: rgba(42, 40, 41, 0.60);
+    }
+
+    .nivis-error {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
+      color: #b42318;
+      font-size: 0.83rem;
+      font-weight: 600;
+    }
+
+    .nivis-error.visible {
+      display: block;
+    }
+
+    .nivis-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nivis-btn {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .nivis-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .nivis-btn-secondary {
+      background: rgba(42, 62, 107, 0.08);
+      color: var(--navy);
+    }
+
+    .nivis-btn-primary {
+      background: var(--navy);
+      color: var(--white);
+      white-space: nowrap;
+    }
+
+    .nivis-btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      pointer-events: none;
+    }
+
+    body.chat-expanded .nivis-topbar {
+      display: none;
+    }
+
+    body.chat-expanded .nivis-sidebar {
+      display: none;
+    }
+
+    body.chat-expanded .nivis-main {
+      grid-template-columns: 1fr;
+    }
+
+    body.chat-expanded .nivis-app {
+      max-width: none;
+      width: 100%;
+      height: calc(100vh - 32px);
+    }
+
+    body.chat-expanded .nivis-chat-panel {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .nivis-topbar {
+      position: relative;
+    }
+
+    .nivis-back {
+      position: absolute;
+      top: -5px;
+      left: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      color: rgba(42, 40, 41, 0.68);
+      background: #ffffff;
+    }
+
+    .nivis-back:hover {
+      background: #f9fafb;
+    }
+
+    @media (max-width: 1100px) {
+      .nivis-main {
+        grid-template-columns: 260px minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      body {
+        padding: 12px;
+      }
+
+      .nivis-app {
+        height: auto;
+        min-height: calc(100vh - 24px);
+      }
+
+      .nivis-main {
+        grid-template-columns: 1fr;
+      }
+
+      .nivis-sidebar {
+        min-height: auto;
+      }
+
+      .nivis-sidebar-scroll {
+        overflow: visible;
+      }
+
+      .nivis-chat-panel {
+        min-height: 70vh;
+      }
+
+      body.chat-expanded .nivis-app {
+        min-height: calc(100vh - 24px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nivis-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .nivis-brand {
+       min-height: 56px;
+     }
+
+      .nivis-badge {
+        white-space: normal;
+      }
+
+      .nivis-chat-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nivis-chat-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .nivis-message,
+      .nivis-message.assistant,
+      .nivis-message.user {
+        max-width: 92%;
+      }
+
+      .nivis-compose-bottom {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .nivis-actions {
+        width: 100%;
+      }
+
+      .nivis-actions .nivis-btn {
+        flex: 1;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+      <div class="nivis-app">
+        <header class="nivis-topbar">
+            <a
+      class="nivis-back"
+      href="https://app.notorio.io/notorio#home/"
+      onclick="window.top.location.href='https://app.notorio.io/notorio#home/'; return false;"
+    >
+  <i class="fa-solid fa-arrow-left"></i>
+  Back to Notorio
+</a>
+      <div class="nivis-brand">
+        <img src="https://images.squarespace-cdn.com/content/v1/683c8b3e99014a3f7eb245c2/1392b4e4-3da5-41ee-aa36-f7dbf559454d/Notorio+Icon.png?format=1500w" alt="Nivis AI icon">
+        <div class="nivis-brand-text">
+          <h1>Nivis AI</h1>
+          <p>Powered by Notorio</p>
+        </div>
+      </div>
+      <div class="nivis-badge">Contract Review • Drafting • Legal Guidance</div>
+    </header>
+
+    <main class="nivis-main">
+      <aside class="nivis-sidebar">
+        <div class="nivis-sidebar-scroll">
+          <h2>Review workspace</h2>
+          <p class="nivis-sidebar-intro">
+            Upload an agreement, choose a task, and ask Nivis AI to review, draft, or get legal guidance.
+          </p>
+
+          <div class="nivis-section">
+            <label class="nivis-label" for="mode">Mode</label>
+            <select id="mode" class="nivis-select">
+              <option value="review">Review</option>
+              <option value="generate">Generate</option>
+              <option value="legal_guidance">Legal Guidance</option>
+            </select>
+          </div>
+
+          <div class="nivis-section">
+            <label class="nivis-label" for="fileUpload">Upload file</label>
+            <div class="nivis-upload-wrap">
+              <input class="nivis-file-input" type="file" id="fileUpload" accept=".pdf,.docx,.txt">
+              <div class="nivis-upload-button">Click or drag a contract here<span style="margin-top:6px;font-size:0.6rem;font-weight:500;opacity:0.75;">Only PDF, DOCX, and TXT files</span></div>
+            </div>
+            <div class="nivis-file-meta">
+              <div id="fileName" class="nivis-file-name">No file selected</div>
+              <button type="button" id="removeFile" class="nivis-remove-file">Remove</button>
+            </div>
+          </div>
+
+          <div class="nivis-section">
+            <span class="nivis-label">Quick actions</span>
+            <div class="nivis-quick-actions">
+              <button class="nivis-chip" type="button"
+                data-review="Review this agreement and identify the top legal and business risks."
+                data-generate="Draft a founder-friendly services agreement with clear payment terms, IP ownership, confidentiality, and termination provisions."
+                data-legal-guidance="Identify the main legal and business considerations in this situation, including contract, employment, compliance, regulatory, and dispute-related issues.">Key issues</button>
+              <button class="nivis-chip" type="button"
+                data-review="Summarize the key obligations, deadlines, termination rights, and other important provisions in this agreement."
+                data-generate="Draft a simple mutual NDA between two companies with standard confidentiality exceptions."
+                data-legal-guidance="Explain the main legal considerations raised by these facts, including any concerns related to worker classification, contract liability, wage and hour rules, or possible misrepresentation.">Summarize</button>
+              <button class="nivis-chip" type="button"
+                data-review="Review this contract and suggest stronger fallback language for risky or one-sided clauses."
+                data-generate="Draft a balanced SaaS agreement for a software company selling subscriptions to business customers."
+                data-legal-guidance="Evaluate this business situation, identify the most important legal considerations, and outline practical next steps along with the facts that matter most.">Evaluate</button>
+            </div>
+          </div>
+
+          <div class="nivis-disclaimer">
+            Nivis AI provides AI-assisted contract support for review and drafting. Nivis AI can make mistakes. Outputs should be reviewed by qualified legal counsel before use.
+          </div>
+        </div>
+      </aside>
+
+      <section class="nivis-chat-panel">
+        <div class="nivis-chat-header">
+          <div>
+            <h3>Contract Intelligence Workspace</h3>
+            <p>Ask questions, upload documents, draft agreements, and get legal guidance.</p>
+          </div>
+
+          <div class="nivis-chat-controls">
+            <div class="nivis-status" id="statusBadge">
+              <span class="nivis-status-dot"></span>
+              Ready
+            </div>
+            <button type="button" class="nivis-icon-btn" id="expandChatBtn" title="Expand chat" aria-label="Expand chat">
+              <i class="fa-solid fa-maximize"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="nivis-chat-body" id="chat">
+          <div class="nivis-messages" id="chatMessages"></div>
+        </div>
+
+        <div class="nivis-input-area">
+          <div class="nivis-compose">
+            <textarea
+              id="message"
+              class="nivis-textarea"
+              placeholder="Describe the contract you want to generate. Example: Draft a simple independent contractor agreement for a startup hiring a developer."
+            ></textarea>
+
+            <div class="nivis-compose-bottom">
+              <div class="nivis-compose-hint" id="composeHint">
+                In Review mode, you can ask a question now or upload a contract for document review.
+              </div>
+
+              <div class="nivis-actions">
+                <button type="button" class="nivis-btn nivis-btn-secondary" id="clearChat">Clear</button>
+                <button type="button" class="nivis-btn nivis-btn-primary" id="send">Send to Nivis AI</button>
+              </div>
+            </div>
+
+            <div class="nivis-error" id="formError"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const fileUpload = document.getElementById("fileUpload");
+    const fileName = document.getElementById("fileName");
+    const removeFile = document.getElementById("removeFile");
+    const messageInput = document.getElementById("message");
+    const modeSelect = document.getElementById("mode");
+    const quickActions = document.querySelectorAll(".nivis-chip");
+    const chat = document.getElementById("chat");
+    const chatMessages = document.getElementById("chatMessages");
+    const clearChat = document.getElementById("clearChat");
+    const sendButton = document.getElementById("send");
+    const formError = document.getElementById("formError");
+    const composeHint = document.getElementById("composeHint");
+    const statusBadge = document.getElementById("statusBadge");
+    const expandChatBtn = document.getElementById("expandChatBtn");
+
+    let isSending = false;
+    let currentConversationId = getStoredConversationId() || createConversationId();
+
+    function getStoredConversationId() {
+      try {
+        return localStorage.getItem("nivisConversationId") || "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function storeConversationId(id) {
+      currentConversationId = id;
+      try {
+        localStorage.setItem("nivisConversationId", id);
+      } catch (error) {
+      }
+    }
+
+    function clearStoredConversationId() {
+      currentConversationId = createConversationId();
+      try {
+        localStorage.setItem("nivisConversationId", currentConversationId);
+      } catch (error) {
+      }
+    }
+
+    function createConversationId() {
+      return "nivis_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+    }
+
+    function scrollChatToBottom() {
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hasFile() {
+      return fileUpload.files && fileUpload.files.length > 0;
+    }
+
+    function showError(message) {
+      formError.textContent = message;
+      formError.classList.add("visible");
+    }
+
+    function clearError() {
+      formError.textContent = "";
+      formError.classList.remove("visible");
+    }
+
+    function normalizeMarkdown(text) {
+      return String(text || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
+    function renderAssistantMarkdown(text) {
+      if (!window.marked) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      return marked.parse(normalizeMarkdown(text), { breaks: false });
+    }
+
+    function getDefaultWelcomeMessage() {
+      return "Hello, I’m Nivis AI. Upload a contract, request a document draft, or describe a business or legal question, and I’ll help review risks, summarize key terms, suggest revisions, and discuss relevant legal considerations.";
+    }
+
+    function setStatus(text) {
+      statusBadge.innerHTML = '<span class="nivis-status-dot"></span>' + text;
+    }
+
+    function updateExpandButtonUI() {
+      const expanded = document.body.classList.contains("chat-expanded");
+      expandChatBtn.innerHTML = expanded
+        ? '<i class="fa-solid fa-minimize"></i>'
+        : '<i class="fa-solid fa-maximize"></i>';
+      expandChatBtn.title = expanded ? "Restore layout" : "Expand chat";
+      expandChatBtn.setAttribute("aria-label", expanded ? "Restore layout" : "Expand chat");
+    }
+
+    function createCopyButton(text) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "nivis-copy-btn";
+      button.title = "Copy response";
+      button.innerHTML = '<i class="fa-solid fa-clone"></i>';
+
+      button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(String(text || ""));
+          button.innerHTML = '<i class="fa-solid fa-check"></i>';
+          button.classList.add("copied");
+
+          window.setTimeout(() => {
+            button.innerHTML = '<i class="fa-solid fa-clone"></i>';
+            button.classList.remove("copied");
+          }, 1400);
+        } catch (error) {
+          button.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+          window.setTimeout(() => {
+            button.innerHTML = '<i class="fa-solid fa-clone"></i>';
+            button.classList.remove("copied");
+          }, 1400);
+        }
+      });
+
+      return button;
+    }
+
+    function addAssistantMessage(text) {
+      const div = document.createElement("div");
+      div.className = "nivis-message assistant";
+
+      const body = document.createElement("div");
+      body.className = "nivis-message-text";
+      body.innerHTML = renderAssistantMarkdown(text);
+      div.appendChild(body);
+
+      const actions = document.createElement("div");
+      actions.className = "nivis-message-actions";
+      actions.appendChild(createCopyButton(normalizeMarkdown(text)));
+      div.appendChild(actions);
+
+      chatMessages.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    function addUserMessage(text, attachedFileName) {
+      const div = document.createElement("div");
+      div.className = "nivis-message user";
+
+      const messageText = document.createElement("div");
+      messageText.className = "nivis-message-text";
+      messageText.textContent = text;
+      div.appendChild(messageText);
+
+      if (attachedFileName) {
+        const fileText = document.createElement("div");
+        fileText.className = "nivis-message-file";
+        fileText.textContent = `Attached file: ${attachedFileName}`;
+        div.appendChild(fileText);
+      }
+
+      chatMessages.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    function addThinkingMessage() {
+      const div = document.createElement("div");
+      div.className = "nivis-message assistant";
+      div.id = "thinkingMessage";
+
+      const body = document.createElement("div");
+      body.className = "nivis-message-text";
+      body.innerHTML = `
+        <div class="nivis-thinking">
+          <span>Nivis AI is thinking</span>
+          <span class="nivis-thinking-dots" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+      `;
+
+      div.appendChild(body);
+      chatMessages.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    function removeThinkingMessage() {
+      const thinking = document.getElementById("thinkingMessage");
+      if (thinking) {
+        thinking.remove();
+      }
+    }
+
+    function getModePromptPlaceholder(mode) {
+      if (mode === "review") {
+        return "Optional review instructions. Example: Review this agreement from the customer perspective and identify the top risks.";
+      }
+      if (mode === "legal_guidance") {
+        return "Describe the legal issue or business situation. Example: We classified a salesperson as a contractor but control their schedule and require exclusivity. Could this create employment classification risk?";
+      }
+      return "Describe the contract you want to generate. Example: Draft a simple independent contractor agreement for a startup hiring a developer.";
+    }
+
+    function updateModeUI() {
+      const mode = modeSelect.value;
+      messageInput.placeholder = getModePromptPlaceholder(mode);
+
+      if (mode === "review") {
+        composeHint.textContent = hasFile()
+          ? "Review mode selected. Your uploaded file will be processed in the backend when you send your message."
+          : "Review mode selected. You can ask a question now, and Nivis AI will note that no document has been uploaded yet.";
+      } else if (mode === "legal_guidance") {
+        composeHint.textContent = "Legal Guidance mode selected. Use this to discuss business law, contracts, employment, compliance, and other legal considerations.";
+      } else {
+        composeHint.textContent = "Generate mode selected. Use this to draft agreements and clauses, not for risk-analysis or legal guidance conversations.";
+      }
+
+      const disabled = isSending || !messageInput.value.trim();
+      sendButton.disabled = disabled;
+      sendButton.setAttribute("aria-disabled", String(disabled));
+    }
+
+    function updateFileUI() {
+      clearError();
+
+      if (hasFile()) {
+        fileName.textContent = fileUpload.files[0].name;
+        removeFile.classList.add("visible");
+      } else {
+        fileName.textContent = "No file selected";
+        removeFile.classList.remove("visible");
+      }
+
+      updateModeUI();
+    }
+
+    function resetWelcomeMessage() {
+      chatMessages.innerHTML = "";
+      addAssistantMessage(getDefaultWelcomeMessage());
+    }
+
+    function buildUserMessageText(mode, text) {
+      if (text) return text;
+      if (mode === "review") return "Please review this contract.";
+      return "";
+    }
+
+    async function sendCurrentMessage() {
+      clearError();
+
+      const mode = modeSelect.value;
+      const text = messageInput.value.trim();
+      const attachedFileName = hasFile() ? fileUpload.files[0].name : "";
+
+      if (!text) {
+        showError(mode === "generate"
+          ? "Describe the contract you want Nivis AI to generate."
+          : mode === "legal_guidance"
+            ? "Describe the legal issue or business situation you want help analyzing."
+            : "Ask Nivis AI what you want reviewed.");
+        return;
+      }
+
+      const userMessageText = buildUserMessageText(mode, text);
+      addUserMessage(userMessageText, attachedFileName);
+
+      isSending = true;
+      updateModeUI();
+      setStatus("Thinking");
+      addThinkingMessage();
+
+      const originalButtonText = sendButton.textContent;
+      sendButton.textContent = "Thinking...";
+      messageInput.value = "";
+
+      const formData = new FormData();
+      formData.append("conversationId", currentConversationId);
+      formData.append("mode", mode);
+      formData.append("message", userMessageText);
+
+      if (hasFile()) {
+        formData.append("file", fileUpload.files[0]);
+      }
+
+      try {
+        const response = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          body: formData
+        });
+
+        const rawText = await response.text();
+        let data = {};
+
+        try {
+          data = rawText ? JSON.parse(rawText) : {};
+        } catch (error) {
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || rawText || `Request failed with status ${response.status}`);
+        }
+
+        if (data.conversationId) {
+          storeConversationId(data.conversationId);
+        }
+
+        removeThinkingMessage();
+        addAssistantMessage(normalizeMarkdown(data.reply || "I ran into an error processing that request."));
+
+        if (hasFile() && data.fileAccepted) {
+          fileUpload.value = "";
+          updateFileUI();
+        }
+
+        setStatus(data.modeLabel ? `Ready • ${data.modeLabel}` : "Ready");
+      } catch (error) {
+        removeThinkingMessage();
+        addAssistantMessage(`I ran into an error: ${error.message || "Failed to fetch"}`);
+        setStatus("Ready");
+      } finally {
+        isSending = false;
+        sendButton.textContent = originalButtonText;
+        updateModeUI();
+      }
+    }
+
+    fileUpload.addEventListener("change", updateFileUI);
+
+    removeFile.addEventListener("click", () => {
+      fileUpload.value = "";
+      updateFileUI();
+      clearError();
+    });
+
+    modeSelect.addEventListener("change", () => {
+      clearError();
+      updateModeUI();
+    });
+
+    messageInput.addEventListener("input", () => {
+      clearError();
+      updateModeUI();
+    });
+
+    messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        if (!sendButton.disabled) {
+          sendCurrentMessage();
+        }
+      }
+    });
+
+    quickActions.forEach((button) => {
+      button.addEventListener("click", () => {
+        const mode = modeSelect.value;
+        const prompt = mode === "review"
+          ? (button.dataset.review || "")
+          : mode === "legal_guidance"
+            ? (button.dataset.legalGuidance || "")
+            : (button.dataset.generate || "");
+        messageInput.value = prompt;
+        messageInput.focus();
+        updateModeUI();
+      });
+    });
+
+    clearChat.addEventListener("click", () => {
+      messageInput.value = "";
+      fileUpload.value = "";
+      clearStoredConversationId();
+      clearError();
+      updateFileUI();
+      resetWelcomeMessage();
+      setStatus("Ready");
+    });
+
+    expandChatBtn.addEventListener("click", () => {
+      document.body.classList.toggle("chat-expanded");
+      updateExpandButtonUI();
+    });
+
+    sendButton.addEventListener("click", sendCurrentMessage);
+
+    window.addEventListener("load", () => {
+      if (!currentConversationId) {
+        storeConversationId(createConversationId());
+      } else {
+        storeConversationId(currentConversationId);
+      }
+
+      resetWelcomeMessage();
+      updateFileUI();
+      updateExpandButtonUI();
+      clearError();
+      scrollChatToBottom();
+    });
+  </script>
+</body>
+</html>
